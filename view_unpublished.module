@@ -1,0 +1,45 @@
+<?php
+
+/*
+* Build a permissions list for viewing unpublished nodes of all content types.
+* Also, provide a 'use view_unpublished module' permission which determines if this module
+* will even attempt to override the default node/nid path.
+*/
+function view_unpublished_perm() {
+  $perms = array('use view_unpublished module', 'view all unpublished content');
+  $types = db_query("select type from {node_type}");
+  $i = 0;
+  while ($type = db_result($types, $i++)) {
+    $perms[] = 'view unpublished '. $type .' content';
+  }
+ 
+  return $perms;
+}
+
+/*
+*  Selectively overrides the node/nid path to set access => true when a user has permission
+*  to view unpublished content
+*/
+function view_unpublished_menu($may_cache) {
+  $items = array();
+  if (!$may_cache) {
+    if (is_numeric(arg(1)) && arg(0) == 'node' && user_access('use view_unpublished module') && !user_access('administer nodes')) {
+        $node = node_load(arg(1));
+        if ($node->status == 0 && (user_access('view unpublished '. $node->type .' content') || user_access('view all unpublished content'))) {
+          //print_r($node);
+          //die();
+          $items[] = array(
+            'path' => 'node/'. arg(1), 
+            'title' => t('View'),
+            'callback' => 'node_page_view',
+            'callback arguments' => array($node),
+            'type' => MENU_CALLBACK,
+            'access' => true,
+          );
+        }
+      }
+  }
+ 
+  return $items;
+}
+

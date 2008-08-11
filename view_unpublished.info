@@ -1,0 +1,4 @@
+; $Id$
+name = View Unpublished Content
+description = "Select which roles should be able to see unpublished content"
+package = "Permissions"
