@@ -1,16 +1,15 @@
-Description:
-------------
-This module allows you to grant access for users to see unpublished nodes.
+View Unpublished
+----------------
+This small module adds the missing permissions "view any unpublished content"
+and "view unpublished $content_type content" to Drupal 7.
 
-Usage:
-------
-view_unpublished looks for two user access permissions: 
-*Use view_unpublished module
-*View unpublished (node type)
 
-After installing the module, navigate to your user access page and assign the appropriate permissions to the roles you wish to be able to view unpublished nodes. For each role that (now) has permissions to view unpublished nodes, assign the "use view_unpublished" permission to them as well.
+Releated isses on drupal.org
+----------------------------
+[New node permission "view any unpublished content"](http://drupal.org/node/273595)
+[Enable Node Grants for Unpublished Nodes](http://drupal.org/node/452538)
 
-Code Contributions:
--------------------
-Brad Bowman/beeradb - Aten Design Group
-Domenic Santangelo/dsantangelo - WorkHabit
+
+Thanks to:
+----------
+Florian Weber (webflo) and thekevinday for their work on the D7 port.
