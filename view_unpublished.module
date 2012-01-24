@@ -76,7 +76,6 @@ function view_unpublished_node_grants($account, $op) {
     foreach(view_unpublished_get_configured_types() as $type) {
       if (user_access("view any unpublished $type content", $account)) {
         $grants['view_unpublished_' . $type . '_content'] = array(1);
-        return $grants;
       }
     }
   }
