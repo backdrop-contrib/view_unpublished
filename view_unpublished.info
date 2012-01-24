@@ -1,8 +1,10 @@
 ; $Id$
 name = View Unpublished
-description = "Select which roles should be able to see unpubished nodes."
+description = "Select which roles should be able to see unpublished nodes."
 package = "Permissions"
 version = 7.x-1.x-dev
 
 ; Core version (required)
 core = 7.x
+
+files[] = view_unpublished_handler_filter_node_status.inc
