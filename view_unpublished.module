@@ -2,8 +2,7 @@
 
 /**
  * @file
- * This is the file description for View Unpublished module.
- *
+ * Main functions and hook implementations of the View Unpublished module.
  */
 
 /**

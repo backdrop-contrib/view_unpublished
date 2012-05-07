@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Provides integration with the Views module.
+ */
+
+/**
  * Filter by view all unpublished permissions granted by view_unpublished
  * Takes over the Published or Admin filter query.
  */
