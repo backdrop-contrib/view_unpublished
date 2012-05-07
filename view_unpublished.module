@@ -78,7 +78,7 @@ function view_unpublished_node_grants($account, $op) {
 }
 
 /**
- * Implements of hook_views_data_alter()
+ * Implements hook_views_data_alter()
  */
 function view_unpublished_views_data_alter(&$data) {
   // published status + extra handler is taken over by our handler
