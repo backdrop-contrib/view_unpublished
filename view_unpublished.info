@@ -1,4 +1,3 @@
-; $Id$
 name = View Unpublished
 description = "Select which roles should be able to see unpublished nodes."
 package = "Permissions"
