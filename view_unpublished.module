@@ -17,7 +17,7 @@ function view_unpublished_permission() {
     ),
   );
   // Generate standard node permissions for all applicable node types.
-  foreach (view_unpublished_get_configured_types() as $type) {
+  foreach (node_permissions_get_configured_types() as $type) {
     $perms += view_unpublished_list_permissions($type);
   }
   return $perms;
@@ -73,19 +73,13 @@ function view_unpublished_node_grants($account, $op) {
       $grants['view_unpublished_content'] = array(1);
       return $grants;
     }
-    foreach(view_unpublished_get_configured_types() as $type) {
+    foreach(node_permissions_get_configured_types() as $type) {
       if (user_access("view any unpublished $type content", $account)) {
         $grants['view_unpublished_' . $type . '_content'] = array(1);
       }
     }
   }
   return $grants;
-}
-
-function view_unpublished_get_configured_types($reset = FALSE) {
-  static $types = array();
-  $types = (empty($types) || $reset == TRUE) ? node_permissions_get_configured_types() : $types;
-  return $types;
 }
 
 /**
