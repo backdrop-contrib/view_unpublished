@@ -16,20 +16,17 @@ function view_unpublished_permission() {
   );
   // Generate standard node permissions for all applicable node types.
   foreach (node_permissions_get_configured_types() as $type) {
-    $perms += view_unpublished_list_permissions($type);
+    $info = node_type_get_type($type);
+    $type = check_plain($info->type);
+    $perms["view any unpublished $type content"] = array(
+      'title' => t('%type_name: View any unpublished content', array('%type_name' => $info->name)),
+    );
   }
   return $perms;
 }
 
 function view_unpublished_list_permissions($type) {
-  $info = node_type_get_type($type);
-  $type = check_plain($info->type);
-  $perms = array(
-    "view any unpublished $type content" => array(
-      'title' => t('%type_name: View any unpublished content', array('%type_name' => $info->name)),
-    ),
-  );
-  return $perms;
+  
 }
 
 /**
