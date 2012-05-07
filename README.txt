@@ -3,6 +3,10 @@ View Unpublished
 This small module adds the missing permissions "view any unpublished content"
 and "view unpublished $content_type content" to Drupal 7.
 
+This module also integrates with the core Content overview screen at /admin/content.
+If you choose the "not published" filter, Drupal will show you unpublished
+content you're allowed to see.
+
 Using view_unpublished with Views
 ---------------------------------
 Use the "Published or admin" filter, NOT "published = yes". Views will then
