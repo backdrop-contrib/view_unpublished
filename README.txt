@@ -9,6 +9,12 @@ Use the "Published or admin" filter, NOT "published = yes". Views will then
 respect your custom permissions. Thanks to hanoii (6.x) and pcambra (7.x) for
 this feature.
 
+Common issues
+-------------
+If for some reason this module seems not to work, try rebuilding your node
+permissions: admin/reports/status/rebuild. Note that this can take significant
+time on larger installs and it is HIGHLY recommended that you back up your site
+first.
 
 Releated isses on drupal.org
 ----------------------------
