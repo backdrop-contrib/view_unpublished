@@ -112,34 +112,43 @@ function view_unpublished_views_query_substitutions() {
 /**
  * Implements hook_query_alter();
  *
- * Modify the Content Overview page to account for view unpublished
- * permissions.
+ * Modify the Content Overview page to account for view unpublished permissions.
  */
 function view_unpublished_query_alter($query) {
   global $user;
-  if (arg(0) == 'admin' && arg(1) == 'content' && get_class($query) == 'TableSort'
-      && $user->uid !== "1" && !user_access('bypass node access') && !user_access('administer nodes')) {
+
+  $is_admin_content_page = (arg(0) == 'admin' && arg(1) == 'content');
+  $is_tablesort_query = (get_class($query) == 'TableSort');
+  $is_not_admin = ($user->uid !== "1");
+  if ($is_admin_content_page && $is_tablesort_query && $is_not_admin) {
     $perms = view_unpublished_user_perms();
-    // "any" in this case means at least 1 view unpublished permission is set to TRUE.
+    // "any" in this case means at least 1 view unpublished permission is set to
+    // TRUE.
     if ($perms['any']) {
       $conditions =& $query->conditions();
       foreach ($conditions as $key => $condition) {
-        // For some queries $condition['field'] is not a string so we need a check for that.
+        // For some queries $condition['field'] is not a string so we need a
+        // check for that.
         if (isset($condition['field']) && $condition['field'] === 'n.status') {
-          if (TRUE) {
-            if ($key == count($conditions) - 2) {
-              // This condition is (probably) coming from modules/node/node.admin.inc,
-              // function node_admin_nodes():       $query->condition('n.status', 1);
-              // We don't want it.
-              unset($conditions[$key]);
-            }
-          }
+            // This condition is (probably) coming from
+            // modules/node/node.admin.inc,
+            // function node_admin_nodes(): $query->condition('n.status', 1);
+            // We don't want it.
+            unset($conditions[$key]);
+        }
+        elseif (is_object($condition['field'])){
+          $subconditions = $conditions[$key]["field"]->conditions();
+          $new_conditions = db_or();
+          $new_conditions->condition('n.status', 1, '=');
+          $new_conditions->condition('n.status', 0, '=');
+          $conditions[$key]["field"] = $new_conditions;
         }
       }
       // If "view any unpublished content" (aka $perms['full']) is set, then
       // leave the rest of the query as-is and return all unpublished content.
       // Otherwise, add a WHERE/OR to the query that specifies content type, as
-      // dictated by the user's permissions, e.g. "view any unpublished page content"
+      // dictated by the user's permissions, e.g. "view any unpublished page
+      // content"
       if (!$perms['full']) {
         $content_perms = array_filter($perms['content_type']);
         if (count($content_perms) === 1) {
@@ -197,7 +206,7 @@ function view_unpublished_content_type_permissions($machine_readable = FALSE) {
 }
 
 /**
- * Utility function, multidimentional in_array().
+ * Utility function, multidimensional in_array().
 */
 function _vup_in_array_r($needle, $haystack, $strict = TRUE) {
   foreach ($haystack as $item) {
