@@ -110,11 +110,11 @@ function view_unpublished_views_query_substitutions() {
 }
 
 /**
- * Implements hook_query_alter();
+ * Implements hook_query_TAG_alter();
  *
  * Modify the Content Overview page to account for view unpublished permissions.
  */
-function view_unpublished_query_alter($query) {
+function view_unpublished_query_node_access_alter($query) {
   global $user;
 
   $is_admin_content_page = (arg(0) == 'admin' && arg(1) == 'content');
