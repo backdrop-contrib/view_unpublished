@@ -1,36 +1,33 @@
 <?php
-
 /**
  * @file
  * Main functions and hook implementations of the View Unpublished module.
  */
 
+
 /**
  * Implements hook_permission().
  */
 function view_unpublished_permission() {
-  $perms = array(
-    'view any unpublished content' => array(
-      'title' => t('View any unpublished content'),
-    ),
-  );
   // Generate standard node permissions for all applicable node types.
   foreach (node_permissions_get_configured_types() as $type) {
     $info = node_type_get_type($type);
     $type = check_plain($info->type);
     $perms["view any unpublished $type content"] = array(
-      'title' => t('%type_name: View any unpublished content', array('%type_name' => $info->name)),
+      'title' => t('%type_name: View any unpublished content',
+        array('%type_name' => $info->name)),
     );
   }
   return $perms;
 }
 
+
 /**
  * Implements hook_node_access_records().
  */
 function view_unpublished_node_access_records($node) {
-  // We only care about the node if is unpublished. If not, it is
-  // treated just like any other node and we completely ignore it.
+  // We only care about the node if is unpublished. If not, it is treated just
+  // like any other node and we completely ignore it.
   if ($node->status == 0) {
     $grants = array();
     // Unpublished nodes should be viewable to all editors.
@@ -62,6 +59,7 @@ function view_unpublished_node_access_records($node) {
   }
 }
 
+
 /**
  * Implements hook_node_grants().
  */
@@ -75,7 +73,7 @@ function view_unpublished_node_grants($account, $op) {
       $grants['view_unpublished_content'] = array(1);
       return $grants;
     }
-    foreach(node_permissions_get_configured_types() as $type) {
+    foreach (node_permissions_get_configured_types() as $type) {
       if (user_access("view any unpublished $type content", $account)) {
         $grants['view_unpublished_' . $type . '_content'] = array(1);
       }
@@ -83,22 +81,25 @@ function view_unpublished_node_grants($account, $op) {
   }
   return $grants;
 }
+
+
 /**
- * Implements hook_views_data_alter()
+ * Implements hook_views_data_alter().
  */
 function view_unpublished_views_data_alter(&$data) {
   // published status + extra handler is taken over by our handler
-  $data['node']['status_extra']['filter']['handler'] = 'view_unpublished_handler_filter_node_status';
+  $data['node']['status_extra']['filter']['handler'] =
+    'view_unpublished_handler_filter_node_status';
 }
 
 
 /**
- * Implements hook_views_handlers()
+ * Implements hook_views_handlers().
  */
 function view_unpublished_views_handlers() {
   return array(
     'info' => array(
-      'path' => drupal_get_path('module', 'view_unpublished'),
+      'path' => backdrop_get_path('module', 'view_unpublished'),
     ),
     'handlers' => array(
       'view_unpublished_handler_filter_node_status' => array(
@@ -108,20 +109,23 @@ function view_unpublished_views_handlers() {
   );
 }
 
+
 /**
  * Implements hook_views_query_substitutions().
  */
 function view_unpublished_views_query_substitutions() {
   $substitutions = array();
   foreach (node_type_get_types() as $type => $name) {
-    $substitutions["***VIEWUNPUBLISHED_$type***"] = intval(user_access('view any unpublished ' . $type . ' content'));
+    $substitutions["***VIEWUNPUBLISHED_$type***"] =
+      intval(user_access('view any unpublished ' . $type . ' content'));
   }
 
   return $substitutions;
 }
 
+
 /**
- * Implements hook_query_TAG_alter();
+ * Implements hook_query_TAG_alter().
  *
  * Modify the Content Overview page to account for view unpublished permissions.
  */
@@ -151,7 +155,7 @@ function view_unpublished_query_node_access_alter(QueryAlterableInterface $query
     // "any" in this case means at least 1 view unpublished permission is set to
     // TRUE.
     if ($perms['any']) {
-      $conditions =& $query->conditions();
+      $conditions = &$query->conditions();
 
       // Configuration of a condition in $conditions to only list published
       // nodes.
@@ -178,7 +182,7 @@ function view_unpublished_query_node_access_alter(QueryAlterableInterface $query
       foreach ($conditions as $key => $condition) {
         // Remove core conditions
         if (!empty($condition['field'])
-          && (
+            && (
             (is_object($condition['field']) && $condition['field']->conditions() == $own_unpublished_condition)
             || (!is_object($condition['field']) && $condition == $published_condition && !$filter_published_only)
           )
@@ -211,6 +215,7 @@ function view_unpublished_query_node_access_alter(QueryAlterableInterface $query
   }
 }
 
+
 /**
  * Utility function that returns the user's view_unpublished permissions in the
  * following format:
@@ -219,7 +224,7 @@ function view_unpublished_query_node_access_alter(QueryAlterableInterface $query
  *  $perms['full'] = TRUE if "view any unpublished content" is set.
  *  $perms['content_type'] = array of content types and the user's
  *    associated view unpublished permission.
-*/
+ */
 function view_unpublished_user_perms() {
   $perms = FALSE;
   $perms['full'] = user_access('view any unpublished content') ? TRUE : FALSE;
@@ -230,9 +235,10 @@ function view_unpublished_user_perms() {
   return $perms;
 }
 
+
 /**
  * Utility function, return a formatted list of content types for use here.
-*/
+ */
 function view_unpublished_content_type_permissions($machine_readable = FALSE) {
   $perms = array();
   foreach (node_permissions_get_configured_types() as $type) {
@@ -243,21 +249,35 @@ function view_unpublished_content_type_permissions($machine_readable = FALSE) {
     }
     else {
       $perms["view any unpublished $type content"] = array(
-        'title' => t('%type_name: View any unpublished content', array('%type_name' => $info->name)),
+        'title' => t('%type_name: View any unpublished content',
+          array('%type_name' => $info->name)),
       );
     }
   }
   return $perms;
 }
 
+
 /**
  * Utility function, multidimensional in_array().
-*/
+ */
 function _vup_in_array_r($needle, $haystack, $strict = TRUE) {
   foreach ($haystack as $item) {
-    if (($strict ? $item === $needle : $item == $needle) || (is_array($item) && _vup_in_array_r($needle, $item, $strict))) {
+    if (($strict ? $item === $needle : $item == $needle) ||
+      (is_array($item) && _vup_in_array_r($needle, $item, $strict))) {
       return TRUE;
     }
   }
   return FALSE;
+}
+
+
+/**
+ * Implements hook_autoload_info().
+ */
+function view_unpublished_autoload_info() {
+  return array(
+    'view_unpublished_handler_filter_node_status' =>
+      'view_unpublished_handler_filter_node_status.inc',
+  );
 }
